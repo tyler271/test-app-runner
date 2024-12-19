@@ -36,6 +36,15 @@ def home():
   return render_template('index.html')
 
 
+
+# POST /api/whatsapp
+@app.route('/api/whatsapp', methods=['POST'])
+def whatsapp_reply():
+  request_data = request.get_json()
+  print(request_data)
+  raise Exception(str(request))
+
+
 # POST /api/movie data: {name:}
 @app.route('/api/movie', methods=['POST'])
 def post_movie():
