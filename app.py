@@ -40,9 +40,10 @@ def home():
 # POST /api/whatsapp
 @app.route('/api/whatsapp', methods=['POST'])
 def whatsapp_reply():
-  request_data = request.get_json()
-  print(request_data)
-  raise Exception(str(request))
+  return { 
+       'msg': 'error occurred',
+       'response': str(request)
+   }
 
 
 # POST /api/movie data: {name:}
