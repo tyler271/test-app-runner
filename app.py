@@ -41,7 +41,7 @@ def home():
 @app.route('/api/whatsapp', methods=['POST'])
 def whatsapp_reply():
   return { 
-       'msg': f'body="{request.r.content}"',
+       'msg': f'body="{request.content}"',
        'response': str(request)
    }
 
