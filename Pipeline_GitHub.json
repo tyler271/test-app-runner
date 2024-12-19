@@ -6,11 +6,13 @@
     "Parameters": {
         "BranchName": {
             "Description": "GitHub branch name",
-            "Type": "String"
+            "Type": "String",
+            "Default": "master"
         },
         "RepositoryName": {
             "Description": "GitHub repository name",
-            "Type": "String"
+            "Type": "String",
+            "Default": "myrepo"
         },
         "ECRRepoName": {
             "Description": "Name of ECR to be created",
