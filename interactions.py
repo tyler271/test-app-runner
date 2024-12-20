@@ -49,8 +49,8 @@ class Interactions:
         #         )
         #         raise
         except Exception as e:
-            self.logger.error(e)
-            raise e
+            self.logger.error(str(e))
+            raise Exception("something went wrong")
         else:
             self.table = table
         return exists
