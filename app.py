@@ -55,10 +55,10 @@ def whatsapp_reply():
 
   log_msg = f'request={request}, type(request)={type(request)}, request.__dict__={d}, dir(request)={dir(request)}, ' + \
     f'request.get_data()={data}, request.get_json()={my_json}, request.body={body}, request[\'body\']={body2}, request.values.get(\'Body\', None)={body3}'
-  app.logger.info(log_msg)
+  app.logger.error(log_msg)
 
   return { 
-       'msg': "hello world",
+       'msg': f"request.values.get(\'Body\', None)={body3}",
        'response': "success"
    }
 
