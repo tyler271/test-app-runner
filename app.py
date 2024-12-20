@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Flask, jsonify, request, render_template
 import boto3
 import os
-from twilio.twiml.messaging_response import MessagingResponse
+from twilio.rest import Client
 
 from interactions import Interactions
 
@@ -16,6 +16,12 @@ interactions = Interactions(dynamodb, logger=app.logger)
 
 if not interactions.exists(table):
   interactions.create_table(table)
+
+# Your Account SID and Auth Token from console.twilio.com
+account_sid = os.environ["TWILIO_ACCOUNT_SID"]
+auth_token  = os.environ["TWILIO_AUTH_TOKEN"]
+
+twilio_client = Client(account_sid, auth_token)
 
 
 #Home Page
@@ -42,8 +48,6 @@ def whatsapp_reply():
   except:
     received_message = None
 
-  resp = MessagingResponse()
-
   app.logger.error(f"phone={phone}, received_message={received_message}")
 
   if phone is not None and received_message is not None:
@@ -55,28 +59,83 @@ def whatsapp_reply():
     previous_interaction_count = len(previous_interaction_records)
 
     # Create a message to send based on combination of message received and the count of interactions
-    message_to_send = f'This is your #{previous_interaction_count + 1} interaction, you sent the message "{received_message}"'
+    message_to_send = f'Hello world. This is your #{previous_interaction_count + 1} interaction, you sent the message "{received_message}".'
 
-    # Incorporate message into response
-    resp.message(message_to_send)
+    # Send whatsapp return message in chunks
+    i = 0
+    chunk_sz = int(os.environ["CHUNK_SZ"])
+    message_failure_flag = False
+    while i < len(message_to_send):
+      # Increment by chunk sz and search for nearest end of a sentence
+      j = min(i + chunk_sz, len(message_to_send))
+      if j < len(message_to_send):
+        while message_to_send[j] not in [".", "?", "!"]:
+            j += 1
+        j += 1
+
+      # Define the chunk as section from i to j
+      chunk = message_to_send[i:j]
+
+      # Redefine i
+      i = j
+
+      # Send the message
+      twilio_message = client.messages.create(
+        to=phone,
+        from_=os.environ["SERVER_PHONE"],
+        body=chunk
+      )
+
+      # Await for a little time until some sort of delivery
+      sid = twilio_message.sid
+      ct = 0
+      while ct < 10 and twilio_message.status not in ["delivery_unknown", "delivered", "undelivered", "failed", "read"]:
+          twilio_message = client.messages(sid).fetch()
+          ct += 1
+
+      # If message was not successfully sent, delivered, or read; then return error
+      if twilio_message.status not in ["sent", "delivered", "read"]:
+        server_msg = f"devliery of response message sid={sid} failed for {timestamp} incoming message from {phone}"
+        message_failure_flag = True
+        break
+      
+
+    if not message_failure_flag:
+      server_msg = "success"
+      # Write record to dynamodb
+      interactions.add_interaction(phone, timestamp, name, received_message, message_to_send)
+
 
   else:
     name = ""
     if phone is None and received_message is not None:
-      message_to_send = 'Phone not parsed successfully'
+      server_msg = 'Phone not parsed successfully'
     elif phone is not None and received_message is None:
-      message_to_send = 'Body not parsed successfully'
+      server_msg = 'Body not parsed successfully'
     else:
-      message_to_send = 'Phone and body not parsed successfully'
-
-    resp.message(message_to_send)
-
-  # Write record to dynamodb
-  interactions.add_interaction(phone, timestamp, name, received_message, message_to_send)
+      server_msg = 'Phone and body not parsed successfully'
 
 
-  return str(resp)
+  return {"msg": server_msg}
 
 
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port=8080)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
