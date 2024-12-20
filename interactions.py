@@ -35,21 +35,19 @@ class Interactions:
         """
         try:
             table = self.dyn_resource.Table(table_name)
+            table.load()
             exists = True
-        # except ClientError as err:
-        #     if err.response["Error"]["Code"] == "ResourceNotFoundException":
-        #         exists = False
-        #     else:
-        #         self.logger.error(
-        #             "Couldn't check for existence of %s. Here's why: %s: %s",
-        #             table_name,
-        #             err.response["Error"]["Code"],
-        #             err.response["Error"]["Message"],
-        #         )
-        #         raise
-        except Exception as e:
-            self.logger.error(str(e))
-            raise Exception("something went wrong")
+        except ClientError as err:
+            if err.response["Error"]["Code"] == "ResourceNotFoundException":
+                exists = False
+            else:
+                self.logger.error(
+                    "Couldn't check for existence of %s. Here's why: %s: %s",
+                    table_name,
+                    err.response["Error"]["Code"],
+                    err.response["Error"]["Message"],
+                )
+                raise
         else:
             self.table = table
         return exists

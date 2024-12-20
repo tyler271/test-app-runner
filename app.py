@@ -11,7 +11,7 @@ from interactions import Interactions
 app = Flask(__name__)
 
 dynamodb = boto3.resource('dynamodb',region_name=os.environ['AWS_REGION'])
-table = dynamodb.Table(os.environ['DDB_TABLE'])
+table = os.environ['DDB_TABLE']
 interactions = Interactions(dynamodb, logger=app.logger)
 
 if not interactions.exists(table):
