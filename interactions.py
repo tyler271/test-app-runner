@@ -49,7 +49,7 @@ class Interactions:
         #         )
         #         raise
         except Exception as e:
-            logger.error(e)
+            self.logger.error(e)
             raise e
         else:
             self.table = table
