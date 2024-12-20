@@ -48,6 +48,9 @@ class Interactions:
                     err.response["Error"]["Message"],
                 )
                 raise
+        except Exception as e:
+            logger.error(e)
+            raise e
         else:
             self.table = table
         return exists
