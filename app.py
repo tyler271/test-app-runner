@@ -80,7 +80,7 @@ def whatsapp_reply():
       i = j
 
       # Send the message
-      twilio_message = client.messages.create(
+      twilio_message = twilio_client.messages.create(
         to=phone,
         from_=os.environ["SERVER_PHONE"],
         body=chunk
@@ -90,7 +90,7 @@ def whatsapp_reply():
       sid = twilio_message.sid
       ct = 0
       while ct < 10 and twilio_message.status not in ["delivery_unknown", "delivered", "undelivered", "failed", "read"]:
-          twilio_message = client.messages(sid).fetch()
+          twilio_message = twilio_client.messages(sid).fetch()
           ct += 1
 
       # If message was not successfully sent, delivered, or read; then return error
