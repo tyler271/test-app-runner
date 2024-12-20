@@ -35,7 +35,6 @@ class Interactions:
         """
         try:
             table = self.dyn_resource.Table(table_name)
-            table.load()
             exists = True
         # except ClientError as err:
         #     if err.response["Error"]["Code"] == "ResourceNotFoundException":
