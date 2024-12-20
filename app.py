@@ -48,8 +48,13 @@ def whatsapp_reply():
   except:
     body2 = "ERROR"
 
+  try:
+    body3 = request.values.get('Body', None)
+  except:
+    body3 = "ERROR"
+
   msg = f'request={request}, type(request)={type(request)}, request.__dict__={d}, dir(request)={dir(request)}, ' + \
-    f'request.get_data()={data}, request.get_json()={my_json}, request.body={body}, request[\'body\']={body2}'
+    f'request.get_data()={data}, request.get_json()={my_json}, request.body={body}, request[\'body\']={body2}, request.values.get(\'Body\', None)={body3}'
 
   return { 
        'msg': msg,
