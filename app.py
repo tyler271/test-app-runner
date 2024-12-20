@@ -73,8 +73,12 @@ def whatsapp_reply():
             j += 1
         j += 1
 
+      app.logger.error(f"i={i}, j={j}")
+
       # Define the chunk as section from i to j
       chunk = message_to_send[i:j]
+
+      app.logger.error(f"chunk={chunk}")
 
       # Redefine i
       i = j
@@ -90,8 +94,13 @@ def whatsapp_reply():
       sid = twilio_message.sid
       ct = 0
       while ct < 10 and twilio_message.status not in ["delivery_unknown", "delivered", "undelivered", "failed", "read"]:
-          twilio_message = twilio_client.messages(sid).fetch()
-          ct += 1
+          try:
+            twilio_message = twilio_client.messages(sid).fetch()
+            app.logger.error(f"ct={ct}, status={twilio_message.status}")
+            ct += 1
+          except Exception as e:
+            app.logger.error(str(e))
+            raise e
 
       # If message was not successfully sent, delivered, or read; then return error
       if twilio_message.status not in ["sent", "delivered", "read"]:
