@@ -24,12 +24,35 @@ def home():
 @app.route('/api/whatsapp', methods=['POST'])
 def whatsapp_reply():
   try:
-    d = json.dumps(request.__dict__, sort_keys=True, indent=4)
+    d = request.__dict__
   except:
     d = "ERROR"
 
+  try:
+    data = request.get_data()
+  except:
+    data = "ERROR"
+
+  try:
+    my_json = request.get_json()
+  except:
+    my_json = "ERROR"
+
+  try:
+    body = request.body
+  except:
+    body = "ERROR"
+
+  try:
+    body2 = request['body']
+  except:
+    body2 = "ERROR"
+
+  msg = f'request={request}, type(request)={type(request)}, request.__dict__={d}, dir(request)={dir(request)}, ' + \
+    f'request.get_data()={data}, request.get_json()={my_json}, request.body={body}, request[\'body\']={body2}'
+
   return { 
-       'msg': f'request={request}\n\ntype(request)={type(request)}\n\nrequest.__dict__={d}\n\ndir(request)={dir(request)}',
+       'msg': msg,
        'response': "success"
    }
 
