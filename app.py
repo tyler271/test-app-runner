@@ -6,6 +6,7 @@ from pprint import pprint
 import boto3
 from botocore.exceptions import ClientError
 import os
+import json
 
 app = Flask(__name__)
 
@@ -23,12 +24,12 @@ def home():
 @app.route('/api/whatsapp', methods=['POST'])
 def whatsapp_reply():
   try:
-    d = request.__dict__
+    d = json.dumps(request.__dict__, sort_keys=True, indent=4)
   except:
     d = "ERROR"
 
   return { 
-       'msg': f'request={request}, type(request)={type(request)}, request.__dict__={d}',
+       'msg': f'request={request}\n\ntype(request)={type(request)}\n\nrequest.__dict__={d}\n\ndir(request)={dir(request)}',
        'response': "success"
    }
 
