@@ -2,8 +2,6 @@ from datetime import datetime
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-logger = logging.getLogger(__name__)
-
 class Interactions:
     """Encapsulates an Amazon DynamoDB table of interactions.
 
