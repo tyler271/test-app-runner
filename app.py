@@ -6,7 +6,7 @@ from pprint import pprint
 import boto3
 from botocore.exceptions import ClientError
 import os
-import json
+from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
 
@@ -24,43 +24,18 @@ def home():
 @app.route('/api/whatsapp', methods=['POST'])
 def whatsapp_reply():
   try:
-    d = request.__dict__
+    body = request.values.get('Body', None)
   except:
-    d = "ERROR"
+    body = None
 
-  try:
-    data = request.get_data()
-  except:
-    data = "ERROR"
+  resp = MessagingResponse()
 
-  try:
-    my_json = request.get_json()
-  except:
-    my_json = "ERROR"
+  if body is not None:
+    resp.message(f"You sent: '{body}'")
+  else:
+    resp.message("Body not parsed successfully")
 
-  try:
-    body = request.body
-  except:
-    body = "ERROR"
-
-  try:
-    body2 = request['body']
-  except:
-    body2 = "ERROR"
-
-  try:
-    body3 = request.values.get('Body', None)
-  except:
-    body3 = "ERROR"
-
-  log_msg = f'request={request}, type(request)={type(request)}, request.__dict__={d}, dir(request)={dir(request)}, ' + \
-    f'request.get_data()={data}, request.get_json()={my_json}, request.body={body}, request[\'body\']={body2}, request.values.get(\'Body\', None)={body3}'
-  app.logger.error(log_msg)
-
-  return { 
-       'msg': f"request.values.get(\'Body\', None)={body3}",
-       'response': "success"
-   }
+  return str(resp)
 
 
 if __name__ == "__main__":
